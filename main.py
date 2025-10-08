@@ -1,5 +1,6 @@
 """Main script for training and running the aquarium prediction model."""
-
+import requests
+import json
 from sklearn.model_selection import train_test_split
 
 from src.data import get_aquarium_logs, preprocess_data
@@ -51,6 +52,28 @@ def main():
     # Step 7: Make predictions
     print("\nMaking predictions for next hour...")
     predictions = make_predictions(model, X)
+
+    # Convert predictions DataFrame to list of dicts
+    predictions_list = predictions.to_dict(orient="records")
+
+    # Step 8: Send to backend
+    print("\nSending predictions to AquaCare backend...")
+    url = "https://aquacare-5cyr.onrender.com/ml"
+
+    try:
+        response = requests.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(predictions_list)
+        )
+
+        if response.status_code == 200:
+            print("Predictions successfully sent to backend!")
+        else:
+            print(f"Failed to send data. Status code: {response.status_code}")
+            print("Response:", response.text)
+    except Exception as e:
+        print(f"Error sending data: {e}")
     
     print("\n=== Next Hour Predictions Per Tank ===")
     for _, row in predictions.iterrows():
@@ -60,9 +83,8 @@ def main():
             f"Temp: {row['predicted_temperature']:.2f}°C, "
             f"Turbidity: {row['predicted_turbidity']:.2f}"
         )
-    
-    print("\nPipeline completed successfully!")
 
+    print("\nPipeline completed successfully!")
 
 if __name__ == "__main__":
     main()
