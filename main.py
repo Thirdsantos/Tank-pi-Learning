@@ -58,7 +58,8 @@ def main():
 
     # Step 8: Send to backend
     print("\nSending predictions to AquaCare backend...")
-    url = "https://aquacare-5cyr.onrender.com/ml"
+    url = "http://127.0.0.1:5001/ml"
+    print(predictions_list)
 
     try:
         response = requests.post(
@@ -74,6 +75,7 @@ def main():
             print("Response:", response.text)
     except Exception as e:
         print(f"Error sending data: {e}")
+
     
     print("\n=== Next Hour Predictions Per Tank ===")
     for _, row in predictions.iterrows():
