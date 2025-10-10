@@ -2,7 +2,6 @@
 import requests
 import json
 from sklearn.model_selection import train_test_split
-
 from src.data import get_aquarium_logs, preprocess_data
 from src.models import (
     train_model, 
@@ -10,8 +9,16 @@ from src.models import (
     save_model_artifacts, 
     make_predictions
 )
+from flask import Flask, jsonify, json
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "Hello, this is the index!"
 
 
+@app.route("/ml_predictions", methods=["GET"])
 def main():
     """Main function to orchestrate the aquarium prediction pipeline."""
     print("Aquarium Learning - Prediction Pipeline")
@@ -58,7 +65,7 @@ def main():
 
     # Step 8: Send to backend
     print("\nSending predictions to AquaCare backend...")
-    url = "http://127.0.0.1:5001/ml"
+    url = "https://aquacare-5cyr.onrender.com/ml"
     print(predictions_list)
 
     try:
@@ -70,11 +77,14 @@ def main():
 
         if response.status_code == 200:
             print("Predictions successfully sent to backend!")
+            result = response.json()
+            return jsonify({"Message" : result})
         else:
             print(f"Failed to send data. Status code: {response.status_code}")
             print("Response:", response.text)
     except Exception as e:
         print(f"Error sending data: {e}")
+        return jsonify({"message" : e})
 
     
     print("\n=== Next Hour Predictions Per Tank ===")
@@ -88,5 +98,7 @@ def main():
 
     print("\nPipeline completed successfully!")
 
+  
+
 if __name__ == "__main__":
-    main()
+  app.run(host="0.0.0.0")
