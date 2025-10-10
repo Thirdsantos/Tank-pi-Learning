@@ -9,13 +9,13 @@ from src.models import (
     save_model_artifacts, 
     make_predictions
 )
-from flask import Flask, jsonify, json
+from flask import Flask, jsonify, json, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, this is the index!"
+  return render_template("index.html")
 
 
 @app.route("/ml_predictions", methods=["GET"])
