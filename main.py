@@ -65,7 +65,7 @@ def main():
 
     # Step 8: Send to backend
     print("\nSending predictions to AquaCare backend...")
-    url = "https://aquacare-5cyr.onrender.com/ml"
+    url = "https://aquacare-6c4q.onrender.com/ml"
     print(predictions_list)
 
     try:
